@@ -1,6 +1,7 @@
 import unittest
 
 from htmlnode import *
+from textnode import *
 
 prop_dict1 = {
     "href": "https://www.google.com",
@@ -69,6 +70,27 @@ class TestHTMLNode(unittest.TestCase):
             parent_node.to_html(),
             '<div href="https://www.google.com"><span><b>grandchild</b></span></div>',
         )
+
+    def test_text(self):
+        node = TextNode("This is a text node", TextType.TEXT)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, None)
+        self.assertEqual(html_node.value, "This is a text node")
+
+    def test_bold_to_html_node(self):
+        node = TextNode("This is a bold node", TextType.BOLD)
+        html_node = text_node_to_html_node(node).to_html()
+        self.assertEqual(html_node, "<b>This is a bold node</b>")
+
+    def test_link_text_to_html_node(self):
+        node = TextNode("This is a link node", TextType.LINK, "https://www.google.com")
+        html_node = text_node_to_html_node(node).to_html()
+        self.assertEqual(html_node, '<a href="https://www.google.com">This is a link node</a>')
+
+    def test_img_text_to_html_node(self):
+        node = TextNode("This is an image node", TextType.IMAGE, "https://www.google.com")
+        html_node = text_node_to_html_node(node).to_html()
+        self.assertEqual(html_node, '<img src="https://www.google.com" alt="This is an image node" />')
 
 
 if __name__ == "__main__":
