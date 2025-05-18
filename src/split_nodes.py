@@ -2,14 +2,20 @@ from textnode import TextType, TextNode
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
-    for node in old_nodes:
-        if text_type != TextType.TEXT or delimiter not in node.text:
-            new_nodes.append(node)
-        elif node.text.count(delimiter) % 2 != 0:
-            raise Exception(f"Invalid markdown syntax - closing delimiter missing in {node}")
-        else:
-             #run another for loop which will be checking how many times we split > mod 2 == 1 or 0 to identify if it's normal text or delimited text   
-            pass
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.TEXT:
+            new_nodes.append(old_node)
+            continue
+        split_nodes = []
+        sections = old_node.text.split(delimiter)
+        if len(sections) % 2 == 0:
+            raise ValueError("invalid markdown, formatted section not closed")
+        for i in range(len(sections)):
+            if sections[i] == "":
+                continue
+            if i % 2 == 0:
+                split_nodes.append(TextNode(sections[i], TextType.TEXT))
+            else:
+                split_nodes.append(TextNode(sections[i], text_type))
+        new_nodes.extend(split_nodes)
     return new_nodes
-
-print(split_nodes_delimiter([TextNode("This is **text** with a **bold** word", TextType.TEXT)],"**",TextType.TEXT))
