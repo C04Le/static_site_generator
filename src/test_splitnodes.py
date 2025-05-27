@@ -1,13 +1,5 @@
 import unittest
-from split_nodes import (
-    split_nodes_delimiter,
-    split_nodes_image,
-    split_nodes_link,
-    text_to_textnodes,
-    extract_markdown_links,
-    extract_markdown_images,
-    markdown_to_blocks
-)
+from split_nodes import *
 
 from textnode import TextNode, TextType
 
@@ -211,6 +203,33 @@ This is the same paragraph on a new line
                     "- This is a list\n- with items",
                 ],
             )
+
+    def test_blocktype_heading(self):
+            block = "## This is a heading"
+            self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+
+    def test_blocktype_code(self):
+            block = "```This is a code block```"
+            self.assertEqual(block_to_block_type(block), BlockType.CODE)
+
+    def test_blocktype_quote(self):
+            block = """>This is a quote
+>another line of qote"""
+            self.assertEqual(block_to_block_type(block), BlockType.QUOTE)
+
+    def test_blocktype_unordered_list(self):
+            block = """- This is an unordered list
+- another item in the list"""
+            self.assertEqual(block_to_block_type(block), BlockType.UNORDERED_LIST)
+    
+    def test_blocktype_ordered_list(self):
+            block = """1. This is an ordered list
+2. another item in the list"""
+            self.assertEqual(block_to_block_type(block), BlockType.ORDERED_LIST)
+
+    def test_blocktype_paragraph(self):
+            block = "This is just a paragraph"
+            self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
 
 
 if __name__ == "__main__":

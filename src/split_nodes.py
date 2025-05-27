@@ -1,6 +1,16 @@
+from enum import Enum
 import re
 
 from textnode import TextType, TextNode
+
+class BlockType(Enum):
+    PARAGRAPH = "paragraph"
+    HEADING = "heading"
+    CODE = "code"
+    QUOTE = "quote"
+    UNORDERED_LIST = "unordered_list"
+    ORDERED_LIST = "ordered_list"
+
 
 def text_to_textnodes(text):
     nodes = [TextNode(text, TextType.TEXT)]
@@ -87,3 +97,17 @@ def markdown_to_blocks(markdown):
         if block != "":
             stripped_blocks.append(stripped_block)
     return stripped_blocks
+
+def block_to_block_type(block):
+    if len(re.findall(r"^#{1,6} .*",block)) > 0:
+        return BlockType.HEADING
+    elif len(re.findall(r"^`{3}.*`{3}$",block)) > 0:
+        return BlockType.CODE
+    elif len(re.findall(r"^>.*",block, flags = re.MULTILINE)) == len(block.splitlines()):
+        return BlockType.QUOTE
+    elif len(re.findall(r"^- .*",block, flags = re.MULTILINE)) == len(block.splitlines()):
+        return BlockType.UNORDERED_LIST
+    elif len(re.findall(r"^\d*\. .*",block, flags = re.MULTILINE)) == len(block.splitlines()):
+        return BlockType.ORDERED_LIST
+    else:
+        return BlockType.PARAGRAPH
